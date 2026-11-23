@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="http://booking.example.com/soap"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:listPromoCodes></tns:listPromoCodes></soapenv:Body></soapenv:Envelope>

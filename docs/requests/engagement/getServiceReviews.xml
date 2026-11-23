@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="http://booking.example.com/soap"><soapenv:Body><tns:getServiceReviews><tns:serviceId>1</tns:serviceId><tns:limit>10</tns:limit><tns:offset>0</tns:offset></tns:getServiceReviews></soapenv:Body></soapenv:Envelope>

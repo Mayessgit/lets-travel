@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="http://booking.example.com/soap"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:createService><tns:name>Test Excursion Tozeur</tns:name><tns:type>EVENT</tns:type><tns:location>Tozeur</tns:location><tns:price>75</tns:price><tns:description>Excursion de démonstration.</tns:description></tns:createService></soapenv:Body></soapenv:Envelope>

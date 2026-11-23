@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="http://booking.example.com/soap"><soapenv:Body><tns:getServiceById><tns:serviceId>1</tns:serviceId></tns:getServiceById></soapenv:Body></soapenv:Envelope>

@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="http://booking.example.com/soap"><soapenv:Body><tns:registerUser><tns:name>Nouveau Client</tns:name><tns:email>nouveau.client@example.com</tns:email><tns:password>Secret123</tns:password><tns:phone>55123456</tns:phone></tns:registerUser></soapenv:Body></soapenv:Envelope>

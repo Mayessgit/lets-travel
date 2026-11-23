@@ -1,0 +1,1381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Contrat WSDL de la plateforme de réservation (maintenu à la main). Style : document/literal.
+     Authentification : en-tête SOAP <tns:AuthToken> contenant le JWT obtenu via loginUser. -->
+<wsdl:definitions name="BookingPlatform"
+    targetNamespace="http://booking.example.com/soap"
+    xmlns:tns="http://booking.example.com/soap"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://booking.example.com/soap" elementFormDefault="qualified">
+      <xsd:element name="AuthToken" type="xsd:string"/>
+
+      <xsd:complexType name="User">
+        <xsd:sequence>
+          <xsd:element name="id" type="xsd:int"/>
+          <xsd:element name="name" type="xsd:string"/>
+          <xsd:element name="email" type="xsd:string"/>
+          <xsd:element name="phone" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="avatar" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="role" type="xsd:string"/>
+          <xsd:element name="createdAt" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:complexType name="Service">
+        <xsd:sequence>
+          <xsd:element name="id" type="xsd:int"/>
+          <xsd:element name="name" type="xsd:string"/>
+          <xsd:element name="type" type="xsd:string"/>
+          <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="location" type="xsd:string"/>
+          <xsd:element name="imageUrl" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="price" type="xsd:decimal"/>
+          <xsd:element name="createdAt" type="xsd:string"/>
+          <xsd:element name="averageRating" type="xsd:decimal" minOccurs="0"/>
+          <xsd:element name="reviewCount" type="xsd:int" minOccurs="0"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:complexType name="Availability">
+        <xsd:sequence>
+          <xsd:element name="id" type="xsd:int"/>
+          <xsd:element name="serviceId" type="xsd:int"/>
+          <xsd:element name="date" type="xsd:string"/>
+          <xsd:element name="totalSlots" type="xsd:int"/>
+          <xsd:element name="availableSlots" type="xsd:int"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:complexType name="Reservation">
+        <xsd:sequence>
+          <xsd:element name="id" type="xsd:int"/>
+          <xsd:element name="userId" type="xsd:int"/>
+          <xsd:element name="serviceId" type="xsd:int"/>
+          <xsd:element name="availabilityId" type="xsd:int"/>
+          <xsd:element name="quantity" type="xsd:int"/>
+          <xsd:element name="totalPrice" type="xsd:decimal"/>
+          <xsd:element name="status" type="xsd:string"/>
+          <xsd:element name="createdAt" type="xsd:string"/>
+          <xsd:element name="serviceName" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="serviceType" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="date" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="promoCode" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="discountAmount" type="xsd:decimal" minOccurs="0"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:complexType name="Payment">
+        <xsd:sequence>
+          <xsd:element name="id" type="xsd:int"/>
+          <xsd:element name="reservationId" type="xsd:int"/>
+          <xsd:element name="amount" type="xsd:decimal"/>
+          <xsd:element name="method" type="xsd:string"/>
+          <xsd:element name="transactionRef" type="xsd:string"/>
+          <xsd:element name="status" type="xsd:string"/>
+          <xsd:element name="createdAt" type="xsd:string"/>
+          <xsd:element name="serviceName" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="date" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <!-- ================= Types v2 : engagement et administration ================= -->
+      <xsd:complexType name="Review">
+        <xsd:sequence>
+          <xsd:element name="id" type="xsd:int"/>
+          <xsd:element name="userId" type="xsd:int"/>
+          <xsd:element name="serviceId" type="xsd:int"/>
+          <xsd:element name="rating" type="xsd:int"/>
+          <xsd:element name="comment" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="createdAt" type="xsd:string"/>
+          <xsd:element name="updatedAt" type="xsd:string"/>
+          <xsd:element name="userName" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="serviceName" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:complexType name="Notification">
+        <xsd:sequence>
+          <xsd:element name="id" type="xsd:int"/>
+          <xsd:element name="type" type="xsd:string"/>
+          <xsd:element name="title" type="xsd:string"/>
+          <xsd:element name="message" type="xsd:string"/>
+          <xsd:element name="isRead" type="xsd:boolean"/>
+          <xsd:element name="createdAt" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:complexType name="PromoCode">
+        <xsd:sequence>
+          <xsd:element name="id" type="xsd:int"/>
+          <xsd:element name="code" type="xsd:string"/>
+          <xsd:element name="percent" type="xsd:int"/>
+          <xsd:element name="validFrom" type="xsd:string"/>
+          <xsd:element name="validTo" type="xsd:string"/>
+          <xsd:element name="maxUses" type="xsd:int" minOccurs="0"/>
+          <xsd:element name="usedCount" type="xsd:int"/>
+          <xsd:element name="active" type="xsd:boolean"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:complexType name="AuditEntry">
+        <xsd:sequence>
+          <xsd:element name="id" type="xsd:int"/>
+          <xsd:element name="adminId" type="xsd:int" minOccurs="0"/>
+          <xsd:element name="adminName" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="action" type="xsd:string"/>
+          <xsd:element name="entity" type="xsd:string"/>
+          <xsd:element name="entityId" type="xsd:int" minOccurs="0"/>
+          <xsd:element name="details" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="createdAt" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:complexType name="KpiStats">
+        <xsd:sequence>
+          <xsd:element name="totalUsers" type="xsd:int"/>
+          <xsd:element name="newUsers" type="xsd:int"/>
+          <xsd:element name="totalServices" type="xsd:int"/>
+          <xsd:element name="totalReservations" type="xsd:int"/>
+          <xsd:element name="pendingReservations" type="xsd:int"/>
+          <xsd:element name="confirmedReservations" type="xsd:int"/>
+          <xsd:element name="cancelledReservations" type="xsd:int"/>
+          <xsd:element name="revenue" type="xsd:decimal"/>
+          <xsd:element name="previousRevenue" type="xsd:decimal"/>
+          <xsd:element name="reservationsInPeriod" type="xsd:int"/>
+          <xsd:element name="previousReservations" type="xsd:int"/>
+          <xsd:element name="refundedAmount" type="xsd:decimal"/>
+          <xsd:element name="averageBasket" type="xsd:decimal"/>
+          <xsd:element name="occupancyRate" type="xsd:decimal"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:complexType name="DailyPoint">
+        <xsd:sequence>
+          <xsd:element name="date" type="xsd:string"/>
+          <xsd:element name="reservations" type="xsd:int"/>
+          <xsd:element name="revenue" type="xsd:decimal"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:complexType name="TypeStat">
+        <xsd:sequence>
+          <xsd:element name="type" type="xsd:string"/>
+          <xsd:element name="reservations" type="xsd:int"/>
+          <xsd:element name="revenue" type="xsd:decimal"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:complexType name="MethodStat">
+        <xsd:sequence>
+          <xsd:element name="method" type="xsd:string"/>
+          <xsd:element name="payments" type="xsd:int"/>
+          <xsd:element name="amount" type="xsd:decimal"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:complexType name="TopServiceStat">
+        <xsd:sequence>
+          <xsd:element name="serviceId" type="xsd:int"/>
+          <xsd:element name="name" type="xsd:string"/>
+          <xsd:element name="type" type="xsd:string"/>
+          <xsd:element name="reservations" type="xsd:int"/>
+          <xsd:element name="revenue" type="xsd:decimal"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:complexType name="LowAvailabilityStat">
+        <xsd:sequence>
+          <xsd:element name="serviceId" type="xsd:int"/>
+          <xsd:element name="serviceName" type="xsd:string"/>
+          <xsd:element name="date" type="xsd:string"/>
+          <xsd:element name="availableSlots" type="xsd:int"/>
+          <xsd:element name="totalSlots" type="xsd:int"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:complexType name="DashboardStats">
+        <xsd:sequence>
+          <xsd:element name="kpis" type="tns:KpiStats"/>
+          <xsd:element name="daily" type="tns:DailyPoint" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element name="byType" type="tns:TypeStat" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element name="byMethod" type="tns:MethodStat" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element name="topServices" type="tns:TopServiceStat" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element name="lowAvailability" type="tns:LowAvailabilityStat" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element name="recent" type="tns:Reservation" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:element name="registerUser">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="name" type="xsd:string"/>
+          <xsd:element name="email" type="xsd:string"/>
+          <xsd:element name="password" type="xsd:string"/>
+          <xsd:element name="phone" type="xsd:string" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="registerUserResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="user" type="tns:User"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="loginUser">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="email" type="xsd:string"/>
+          <xsd:element name="password" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="loginUserResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="token" type="xsd:string"/>
+          <xsd:element name="user" type="tns:User"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getUser">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="userId" type="xsd:int" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getUserResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="user" type="tns:User"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="updateUser">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="userId" type="xsd:int" minOccurs="0"/>
+          <xsd:element name="name" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="phone" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="removePhone" type="xsd:boolean" minOccurs="0"/>
+          <xsd:element name="avatar" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="removeAvatar" type="xsd:boolean" minOccurs="0"/>
+          <xsd:element name="currentPassword" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="password" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="role" type="xsd:string" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="updateUserResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="user" type="tns:User"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="deleteUser">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="userId" type="xsd:int" minOccurs="0"/>
+          <xsd:element name="password" type="xsd:string" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="deleteUserResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="message" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="listUsers">
+        <xsd:complexType>
+          <xsd:sequence>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="listUsersResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="user" type="tns:User" minOccurs="0" maxOccurs="unbounded"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getAllServices">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="type" type="xsd:string" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getAllServicesResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="service" type="tns:Service" minOccurs="0" maxOccurs="unbounded"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getServiceById">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="serviceId" type="xsd:int"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getServiceByIdResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="service" type="tns:Service"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="searchServices">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="keyword" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="type" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="location" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="maxPrice" type="xsd:decimal" minOccurs="0"/>
+          <xsd:element name="date" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="sortBy" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="minRating" type="xsd:int" minOccurs="0"/>
+          <xsd:element name="limit" type="xsd:int" minOccurs="0"/>
+          <xsd:element name="offset" type="xsd:int" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="searchServicesResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="service" type="tns:Service" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element name="total" type="xsd:int"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="checkAvailability">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="serviceId" type="xsd:int"/>
+          <xsd:element name="date" type="xsd:string"/>
+          <xsd:element name="quantity" type="xsd:int" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="checkAvailabilityResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="available" type="xsd:boolean"/>
+          <xsd:element name="availableSlots" type="xsd:int"/>
+          <xsd:element name="availability" type="tns:Availability" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getAvailableSlots">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="serviceId" type="xsd:int"/>
+          <xsd:element name="includeAll" type="xsd:boolean" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getAvailableSlotsResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="availability" type="tns:Availability" minOccurs="0" maxOccurs="unbounded"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="createService">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="name" type="xsd:string"/>
+          <xsd:element name="type" type="xsd:string"/>
+          <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="location" type="xsd:string"/>
+          <xsd:element name="imageUrl" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="price" type="xsd:decimal"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="createServiceResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="service" type="tns:Service"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="updateService">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="serviceId" type="xsd:int"/>
+          <xsd:element name="name" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="type" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="location" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="imageUrl" type="xsd:string" minOccurs="0"/>
+          <xsd:element name="price" type="xsd:decimal" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="updateServiceResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="service" type="tns:Service"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="deleteService">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="serviceId" type="xsd:int"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="deleteServiceResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="message" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="setAvailability">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="serviceId" type="xsd:int"/>
+          <xsd:element name="date" type="xsd:string"/>
+          <xsd:element name="totalSlots" type="xsd:int"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="setAvailabilityResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="availability" type="tns:Availability"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="createReservation">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="availabilityId" type="xsd:int"/>
+          <xsd:element name="quantity" type="xsd:int"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="createReservationResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="reservation" type="tns:Reservation"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getReservation">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="reservationId" type="xsd:int"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getReservationResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="reservation" type="tns:Reservation"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getUserReservations">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="userId" type="xsd:int" minOccurs="0"/>
+          <xsd:element name="status" type="xsd:string" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getUserReservationsResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="reservation" type="tns:Reservation" minOccurs="0" maxOccurs="unbounded"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="cancelReservation">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="reservationId" type="xsd:int"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="cancelReservationResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="reservation" type="tns:Reservation"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="updateReservation">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="reservationId" type="xsd:int"/>
+          <xsd:element name="quantity" type="xsd:int"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="updateReservationResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="reservation" type="tns:Reservation"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getAllReservations">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="status" type="xsd:string" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getAllReservationsResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="reservation" type="tns:Reservation" minOccurs="0" maxOccurs="unbounded"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="createPayment">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="reservationId" type="xsd:int"/>
+          <xsd:element name="method" type="xsd:string"/>
+          <xsd:element name="simulateFailure" type="xsd:boolean" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="createPaymentResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="payment" type="tns:Payment"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getPayment">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="paymentId" type="xsd:int"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getPaymentResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="payment" type="tns:Payment"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getPaymentByReservation">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="reservationId" type="xsd:int"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getPaymentByReservationResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="payment" type="tns:Payment"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="refundPayment">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="paymentId" type="xsd:int"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="refundPaymentResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="payment" type="tns:Payment"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getAllPayments">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="status" type="xsd:string" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getAllPaymentsResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          <xsd:element name="payment" type="tns:Payment" minOccurs="0" maxOccurs="unbounded"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- ================= EngagementService ================= -->
+      <xsd:element name="addFavorite">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="serviceId" type="xsd:int"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="addFavoriteResponse">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="message" type="xsd:string"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="removeFavorite">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="serviceId" type="xsd:int"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="removeFavoriteResponse">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="message" type="xsd:string"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getFavorites">
+        <xsd:complexType><xsd:sequence>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getFavoritesResponse">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="service" type="tns:Service" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="saveReview">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="serviceId" type="xsd:int"/>
+          <xsd:element name="rating" type="xsd:int"/>
+          <xsd:element name="comment" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="saveReviewResponse">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="review" type="tns:Review"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="deleteReview">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="reviewId" type="xsd:int"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="deleteReviewResponse">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="message" type="xsd:string"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getServiceReviews">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="serviceId" type="xsd:int"/>
+          <xsd:element name="limit" type="xsd:int" minOccurs="0"/>
+          <xsd:element name="offset" type="xsd:int" minOccurs="0"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getServiceReviewsResponse">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="review" type="tns:Review" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element name="averageRating" type="xsd:decimal"/>
+          <xsd:element name="reviewCount" type="xsd:int"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getMyNotifications">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="unreadOnly" type="xsd:boolean" minOccurs="0"/>
+          <xsd:element name="limit" type="xsd:int" minOccurs="0"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getMyNotificationsResponse">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="notification" type="tns:Notification" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element name="unreadCount" type="xsd:int"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="markNotificationRead">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="notificationId" type="xsd:int"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="markNotificationReadResponse">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="notification" type="tns:Notification"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="markAllNotificationsRead">
+        <xsd:complexType><xsd:sequence>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="markAllNotificationsReadResponse">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="message" type="xsd:string"/>
+          <xsd:element name="updated" type="xsd:int"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="checkPromoCode">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="code" type="xsd:string"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="checkPromoCodeResponse">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="code" type="xsd:string"/>
+          <xsd:element name="percent" type="xsd:int"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+
+      <!-- ================= AdminService ================= -->
+      <xsd:element name="getDashboardStats">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="days" type="xsd:int" minOccurs="0"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getDashboardStatsResponse">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="dashboard" type="tns:DashboardStats"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getAuditLog">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="limit" type="xsd:int" minOccurs="0"/>
+          <xsd:element name="offset" type="xsd:int" minOccurs="0"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getAuditLogResponse">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="entry" type="tns:AuditEntry" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element name="total" type="xsd:int"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getAllReviews">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="limit" type="xsd:int" minOccurs="0"/>
+          <xsd:element name="offset" type="xsd:int" minOccurs="0"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getAllReviewsResponse">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="review" type="tns:Review" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element name="total" type="xsd:int"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="createPromoCode">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="code" type="xsd:string"/>
+          <xsd:element name="percent" type="xsd:int"/>
+          <xsd:element name="validFrom" type="xsd:string"/>
+          <xsd:element name="validTo" type="xsd:string"/>
+          <xsd:element name="maxUses" type="xsd:int" minOccurs="0"/>
+          <xsd:element name="active" type="xsd:boolean" minOccurs="0"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="createPromoCodeResponse">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="promo" type="tns:PromoCode"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="listPromoCodes">
+        <xsd:complexType><xsd:sequence>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="listPromoCodesResponse">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="promo" type="tns:PromoCode" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="setPromoCodeActive">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="promoCodeId" type="xsd:int"/>
+          <xsd:element name="active" type="xsd:boolean"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="setPromoCodeActiveResponse">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="promo" type="tns:PromoCode"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="deletePromoCode">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="promoCodeId" type="xsd:int"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="deletePromoCodeResponse">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="message" type="xsd:string"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="getMyPayments">
+        <xsd:complexType><xsd:sequence>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getMyPaymentsResponse">
+        <xsd:complexType><xsd:sequence>
+          <xsd:element name="payment" type="tns:Payment" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence></xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </wsdl:types>
+
+  <wsdl:message name="AuthHeader"><wsdl:part name="AuthToken" element="tns:AuthToken"/></wsdl:message>
+  <wsdl:message name="registerUserIn"><wsdl:part name="parameters" element="tns:registerUser"/></wsdl:message>
+  <wsdl:message name="registerUserOut"><wsdl:part name="parameters" element="tns:registerUserResponse"/></wsdl:message>
+  <wsdl:message name="loginUserIn"><wsdl:part name="parameters" element="tns:loginUser"/></wsdl:message>
+  <wsdl:message name="loginUserOut"><wsdl:part name="parameters" element="tns:loginUserResponse"/></wsdl:message>
+  <wsdl:message name="getUserIn"><wsdl:part name="parameters" element="tns:getUser"/></wsdl:message>
+  <wsdl:message name="getUserOut"><wsdl:part name="parameters" element="tns:getUserResponse"/></wsdl:message>
+  <wsdl:message name="updateUserIn"><wsdl:part name="parameters" element="tns:updateUser"/></wsdl:message>
+  <wsdl:message name="updateUserOut"><wsdl:part name="parameters" element="tns:updateUserResponse"/></wsdl:message>
+  <wsdl:message name="deleteUserIn"><wsdl:part name="parameters" element="tns:deleteUser"/></wsdl:message>
+  <wsdl:message name="deleteUserOut"><wsdl:part name="parameters" element="tns:deleteUserResponse"/></wsdl:message>
+  <wsdl:message name="listUsersIn"><wsdl:part name="parameters" element="tns:listUsers"/></wsdl:message>
+  <wsdl:message name="listUsersOut"><wsdl:part name="parameters" element="tns:listUsersResponse"/></wsdl:message>
+  <wsdl:message name="getAllServicesIn"><wsdl:part name="parameters" element="tns:getAllServices"/></wsdl:message>
+  <wsdl:message name="getAllServicesOut"><wsdl:part name="parameters" element="tns:getAllServicesResponse"/></wsdl:message>
+  <wsdl:message name="getServiceByIdIn"><wsdl:part name="parameters" element="tns:getServiceById"/></wsdl:message>
+  <wsdl:message name="getServiceByIdOut"><wsdl:part name="parameters" element="tns:getServiceByIdResponse"/></wsdl:message>
+  <wsdl:message name="searchServicesIn"><wsdl:part name="parameters" element="tns:searchServices"/></wsdl:message>
+  <wsdl:message name="searchServicesOut"><wsdl:part name="parameters" element="tns:searchServicesResponse"/></wsdl:message>
+  <wsdl:message name="checkAvailabilityIn"><wsdl:part name="parameters" element="tns:checkAvailability"/></wsdl:message>
+  <wsdl:message name="checkAvailabilityOut"><wsdl:part name="parameters" element="tns:checkAvailabilityResponse"/></wsdl:message>
+  <wsdl:message name="getAvailableSlotsIn"><wsdl:part name="parameters" element="tns:getAvailableSlots"/></wsdl:message>
+  <wsdl:message name="getAvailableSlotsOut"><wsdl:part name="parameters" element="tns:getAvailableSlotsResponse"/></wsdl:message>
+  <wsdl:message name="createServiceIn"><wsdl:part name="parameters" element="tns:createService"/></wsdl:message>
+  <wsdl:message name="createServiceOut"><wsdl:part name="parameters" element="tns:createServiceResponse"/></wsdl:message>
+  <wsdl:message name="updateServiceIn"><wsdl:part name="parameters" element="tns:updateService"/></wsdl:message>
+  <wsdl:message name="updateServiceOut"><wsdl:part name="parameters" element="tns:updateServiceResponse"/></wsdl:message>
+  <wsdl:message name="deleteServiceIn"><wsdl:part name="parameters" element="tns:deleteService"/></wsdl:message>
+  <wsdl:message name="deleteServiceOut"><wsdl:part name="parameters" element="tns:deleteServiceResponse"/></wsdl:message>
+  <wsdl:message name="setAvailabilityIn"><wsdl:part name="parameters" element="tns:setAvailability"/></wsdl:message>
+  <wsdl:message name="setAvailabilityOut"><wsdl:part name="parameters" element="tns:setAvailabilityResponse"/></wsdl:message>
+  <wsdl:message name="createReservationIn"><wsdl:part name="parameters" element="tns:createReservation"/></wsdl:message>
+  <wsdl:message name="createReservationOut"><wsdl:part name="parameters" element="tns:createReservationResponse"/></wsdl:message>
+  <wsdl:message name="getReservationIn"><wsdl:part name="parameters" element="tns:getReservation"/></wsdl:message>
+  <wsdl:message name="getReservationOut"><wsdl:part name="parameters" element="tns:getReservationResponse"/></wsdl:message>
+  <wsdl:message name="getUserReservationsIn"><wsdl:part name="parameters" element="tns:getUserReservations"/></wsdl:message>
+  <wsdl:message name="getUserReservationsOut"><wsdl:part name="parameters" element="tns:getUserReservationsResponse"/></wsdl:message>
+  <wsdl:message name="cancelReservationIn"><wsdl:part name="parameters" element="tns:cancelReservation"/></wsdl:message>
+  <wsdl:message name="cancelReservationOut"><wsdl:part name="parameters" element="tns:cancelReservationResponse"/></wsdl:message>
+  <wsdl:message name="updateReservationIn"><wsdl:part name="parameters" element="tns:updateReservation"/></wsdl:message>
+  <wsdl:message name="updateReservationOut"><wsdl:part name="parameters" element="tns:updateReservationResponse"/></wsdl:message>
+  <wsdl:message name="getAllReservationsIn"><wsdl:part name="parameters" element="tns:getAllReservations"/></wsdl:message>
+  <wsdl:message name="getAllReservationsOut"><wsdl:part name="parameters" element="tns:getAllReservationsResponse"/></wsdl:message>
+  <wsdl:message name="createPaymentIn"><wsdl:part name="parameters" element="tns:createPayment"/></wsdl:message>
+  <wsdl:message name="createPaymentOut"><wsdl:part name="parameters" element="tns:createPaymentResponse"/></wsdl:message>
+  <wsdl:message name="getPaymentIn"><wsdl:part name="parameters" element="tns:getPayment"/></wsdl:message>
+  <wsdl:message name="getPaymentOut"><wsdl:part name="parameters" element="tns:getPaymentResponse"/></wsdl:message>
+  <wsdl:message name="getPaymentByReservationIn"><wsdl:part name="parameters" element="tns:getPaymentByReservation"/></wsdl:message>
+  <wsdl:message name="getPaymentByReservationOut"><wsdl:part name="parameters" element="tns:getPaymentByReservationResponse"/></wsdl:message>
+  <wsdl:message name="refundPaymentIn"><wsdl:part name="parameters" element="tns:refundPayment"/></wsdl:message>
+  <wsdl:message name="refundPaymentOut"><wsdl:part name="parameters" element="tns:refundPaymentResponse"/></wsdl:message>
+  <wsdl:message name="getAllPaymentsIn"><wsdl:part name="parameters" element="tns:getAllPayments"/></wsdl:message>
+  <wsdl:message name="getAllPaymentsOut"><wsdl:part name="parameters" element="tns:getAllPaymentsResponse"/></wsdl:message>
+
+  <wsdl:message name="getMyPaymentsIn"><wsdl:part name="parameters" element="tns:getMyPayments"/></wsdl:message>
+  <wsdl:message name="getMyPaymentsOut"><wsdl:part name="parameters" element="tns:getMyPaymentsResponse"/></wsdl:message>
+  <wsdl:message name="addFavoriteIn"><wsdl:part name="parameters" element="tns:addFavorite"/></wsdl:message>
+  <wsdl:message name="addFavoriteOut"><wsdl:part name="parameters" element="tns:addFavoriteResponse"/></wsdl:message>
+  <wsdl:message name="removeFavoriteIn"><wsdl:part name="parameters" element="tns:removeFavorite"/></wsdl:message>
+  <wsdl:message name="removeFavoriteOut"><wsdl:part name="parameters" element="tns:removeFavoriteResponse"/></wsdl:message>
+  <wsdl:message name="getFavoritesIn"><wsdl:part name="parameters" element="tns:getFavorites"/></wsdl:message>
+  <wsdl:message name="getFavoritesOut"><wsdl:part name="parameters" element="tns:getFavoritesResponse"/></wsdl:message>
+  <wsdl:message name="saveReviewIn"><wsdl:part name="parameters" element="tns:saveReview"/></wsdl:message>
+  <wsdl:message name="saveReviewOut"><wsdl:part name="parameters" element="tns:saveReviewResponse"/></wsdl:message>
+  <wsdl:message name="deleteReviewIn"><wsdl:part name="parameters" element="tns:deleteReview"/></wsdl:message>
+  <wsdl:message name="deleteReviewOut"><wsdl:part name="parameters" element="tns:deleteReviewResponse"/></wsdl:message>
+  <wsdl:message name="getServiceReviewsIn"><wsdl:part name="parameters" element="tns:getServiceReviews"/></wsdl:message>
+  <wsdl:message name="getServiceReviewsOut"><wsdl:part name="parameters" element="tns:getServiceReviewsResponse"/></wsdl:message>
+  <wsdl:message name="getMyNotificationsIn"><wsdl:part name="parameters" element="tns:getMyNotifications"/></wsdl:message>
+  <wsdl:message name="getMyNotificationsOut"><wsdl:part name="parameters" element="tns:getMyNotificationsResponse"/></wsdl:message>
+  <wsdl:message name="markNotificationReadIn"><wsdl:part name="parameters" element="tns:markNotificationRead"/></wsdl:message>
+  <wsdl:message name="markNotificationReadOut"><wsdl:part name="parameters" element="tns:markNotificationReadResponse"/></wsdl:message>
+  <wsdl:message name="markAllNotificationsReadIn"><wsdl:part name="parameters" element="tns:markAllNotificationsRead"/></wsdl:message>
+  <wsdl:message name="markAllNotificationsReadOut"><wsdl:part name="parameters" element="tns:markAllNotificationsReadResponse"/></wsdl:message>
+  <wsdl:message name="checkPromoCodeIn"><wsdl:part name="parameters" element="tns:checkPromoCode"/></wsdl:message>
+  <wsdl:message name="checkPromoCodeOut"><wsdl:part name="parameters" element="tns:checkPromoCodeResponse"/></wsdl:message>
+  <wsdl:message name="getDashboardStatsIn"><wsdl:part name="parameters" element="tns:getDashboardStats"/></wsdl:message>
+  <wsdl:message name="getDashboardStatsOut"><wsdl:part name="parameters" element="tns:getDashboardStatsResponse"/></wsdl:message>
+  <wsdl:message name="getAuditLogIn"><wsdl:part name="parameters" element="tns:getAuditLog"/></wsdl:message>
+  <wsdl:message name="getAuditLogOut"><wsdl:part name="parameters" element="tns:getAuditLogResponse"/></wsdl:message>
+  <wsdl:message name="getAllReviewsIn"><wsdl:part name="parameters" element="tns:getAllReviews"/></wsdl:message>
+  <wsdl:message name="getAllReviewsOut"><wsdl:part name="parameters" element="tns:getAllReviewsResponse"/></wsdl:message>
+  <wsdl:message name="createPromoCodeIn"><wsdl:part name="parameters" element="tns:createPromoCode"/></wsdl:message>
+  <wsdl:message name="createPromoCodeOut"><wsdl:part name="parameters" element="tns:createPromoCodeResponse"/></wsdl:message>
+  <wsdl:message name="listPromoCodesIn"><wsdl:part name="parameters" element="tns:listPromoCodes"/></wsdl:message>
+  <wsdl:message name="listPromoCodesOut"><wsdl:part name="parameters" element="tns:listPromoCodesResponse"/></wsdl:message>
+  <wsdl:message name="setPromoCodeActiveIn"><wsdl:part name="parameters" element="tns:setPromoCodeActive"/></wsdl:message>
+  <wsdl:message name="setPromoCodeActiveOut"><wsdl:part name="parameters" element="tns:setPromoCodeActiveResponse"/></wsdl:message>
+  <wsdl:message name="deletePromoCodeIn"><wsdl:part name="parameters" element="tns:deletePromoCode"/></wsdl:message>
+  <wsdl:message name="deletePromoCodeOut"><wsdl:part name="parameters" element="tns:deletePromoCodeResponse"/></wsdl:message>
+
+  <wsdl:portType name="UserServicePortType">
+    <wsdl:operation name="registerUser"><wsdl:input message="tns:registerUserIn"/><wsdl:output message="tns:registerUserOut"/></wsdl:operation>
+    <wsdl:operation name="loginUser"><wsdl:input message="tns:loginUserIn"/><wsdl:output message="tns:loginUserOut"/></wsdl:operation>
+    <wsdl:operation name="getUser"><wsdl:input message="tns:getUserIn"/><wsdl:output message="tns:getUserOut"/></wsdl:operation>
+    <wsdl:operation name="updateUser"><wsdl:input message="tns:updateUserIn"/><wsdl:output message="tns:updateUserOut"/></wsdl:operation>
+    <wsdl:operation name="deleteUser"><wsdl:input message="tns:deleteUserIn"/><wsdl:output message="tns:deleteUserOut"/></wsdl:operation>
+    <wsdl:operation name="listUsers"><wsdl:input message="tns:listUsersIn"/><wsdl:output message="tns:listUsersOut"/></wsdl:operation>
+  </wsdl:portType>
+
+  <wsdl:portType name="AvailabilityServicePortType">
+    <wsdl:operation name="getAllServices"><wsdl:input message="tns:getAllServicesIn"/><wsdl:output message="tns:getAllServicesOut"/></wsdl:operation>
+    <wsdl:operation name="getServiceById"><wsdl:input message="tns:getServiceByIdIn"/><wsdl:output message="tns:getServiceByIdOut"/></wsdl:operation>
+    <wsdl:operation name="searchServices"><wsdl:input message="tns:searchServicesIn"/><wsdl:output message="tns:searchServicesOut"/></wsdl:operation>
+    <wsdl:operation name="checkAvailability"><wsdl:input message="tns:checkAvailabilityIn"/><wsdl:output message="tns:checkAvailabilityOut"/></wsdl:operation>
+    <wsdl:operation name="getAvailableSlots"><wsdl:input message="tns:getAvailableSlotsIn"/><wsdl:output message="tns:getAvailableSlotsOut"/></wsdl:operation>
+    <wsdl:operation name="createService"><wsdl:input message="tns:createServiceIn"/><wsdl:output message="tns:createServiceOut"/></wsdl:operation>
+    <wsdl:operation name="updateService"><wsdl:input message="tns:updateServiceIn"/><wsdl:output message="tns:updateServiceOut"/></wsdl:operation>
+    <wsdl:operation name="deleteService"><wsdl:input message="tns:deleteServiceIn"/><wsdl:output message="tns:deleteServiceOut"/></wsdl:operation>
+    <wsdl:operation name="setAvailability"><wsdl:input message="tns:setAvailabilityIn"/><wsdl:output message="tns:setAvailabilityOut"/></wsdl:operation>
+  </wsdl:portType>
+
+  <wsdl:portType name="BookingServicePortType">
+    <wsdl:operation name="createReservation"><wsdl:input message="tns:createReservationIn"/><wsdl:output message="tns:createReservationOut"/></wsdl:operation>
+    <wsdl:operation name="getReservation"><wsdl:input message="tns:getReservationIn"/><wsdl:output message="tns:getReservationOut"/></wsdl:operation>
+    <wsdl:operation name="getUserReservations"><wsdl:input message="tns:getUserReservationsIn"/><wsdl:output message="tns:getUserReservationsOut"/></wsdl:operation>
+    <wsdl:operation name="cancelReservation"><wsdl:input message="tns:cancelReservationIn"/><wsdl:output message="tns:cancelReservationOut"/></wsdl:operation>
+    <wsdl:operation name="updateReservation"><wsdl:input message="tns:updateReservationIn"/><wsdl:output message="tns:updateReservationOut"/></wsdl:operation>
+    <wsdl:operation name="getAllReservations"><wsdl:input message="tns:getAllReservationsIn"/><wsdl:output message="tns:getAllReservationsOut"/></wsdl:operation>
+  </wsdl:portType>
+
+  <wsdl:portType name="PaymentServicePortType">
+    <wsdl:operation name="createPayment"><wsdl:input message="tns:createPaymentIn"/><wsdl:output message="tns:createPaymentOut"/></wsdl:operation>
+    <wsdl:operation name="getPayment"><wsdl:input message="tns:getPaymentIn"/><wsdl:output message="tns:getPaymentOut"/></wsdl:operation>
+    <wsdl:operation name="getPaymentByReservation"><wsdl:input message="tns:getPaymentByReservationIn"/><wsdl:output message="tns:getPaymentByReservationOut"/></wsdl:operation>
+    <wsdl:operation name="refundPayment"><wsdl:input message="tns:refundPaymentIn"/><wsdl:output message="tns:refundPaymentOut"/></wsdl:operation>
+    <wsdl:operation name="getAllPayments"><wsdl:input message="tns:getAllPaymentsIn"/><wsdl:output message="tns:getAllPaymentsOut"/></wsdl:operation>
+    <wsdl:operation name="getMyPayments"><wsdl:input message="tns:getMyPaymentsIn"/><wsdl:output message="tns:getMyPaymentsOut"/></wsdl:operation>
+  </wsdl:portType>
+
+  <wsdl:portType name="EngagementServicePortType">
+    <wsdl:operation name="addFavorite"><wsdl:input message="tns:addFavoriteIn"/><wsdl:output message="tns:addFavoriteOut"/></wsdl:operation>
+    <wsdl:operation name="removeFavorite"><wsdl:input message="tns:removeFavoriteIn"/><wsdl:output message="tns:removeFavoriteOut"/></wsdl:operation>
+    <wsdl:operation name="getFavorites"><wsdl:input message="tns:getFavoritesIn"/><wsdl:output message="tns:getFavoritesOut"/></wsdl:operation>
+    <wsdl:operation name="saveReview"><wsdl:input message="tns:saveReviewIn"/><wsdl:output message="tns:saveReviewOut"/></wsdl:operation>
+    <wsdl:operation name="deleteReview"><wsdl:input message="tns:deleteReviewIn"/><wsdl:output message="tns:deleteReviewOut"/></wsdl:operation>
+    <wsdl:operation name="getServiceReviews"><wsdl:input message="tns:getServiceReviewsIn"/><wsdl:output message="tns:getServiceReviewsOut"/></wsdl:operation>
+    <wsdl:operation name="getMyNotifications"><wsdl:input message="tns:getMyNotificationsIn"/><wsdl:output message="tns:getMyNotificationsOut"/></wsdl:operation>
+    <wsdl:operation name="markNotificationRead"><wsdl:input message="tns:markNotificationReadIn"/><wsdl:output message="tns:markNotificationReadOut"/></wsdl:operation>
+    <wsdl:operation name="markAllNotificationsRead"><wsdl:input message="tns:markAllNotificationsReadIn"/><wsdl:output message="tns:markAllNotificationsReadOut"/></wsdl:operation>
+    <wsdl:operation name="checkPromoCode"><wsdl:input message="tns:checkPromoCodeIn"/><wsdl:output message="tns:checkPromoCodeOut"/></wsdl:operation>
+  </wsdl:portType>
+
+  <wsdl:portType name="AdminServicePortType">
+    <wsdl:operation name="getDashboardStats"><wsdl:input message="tns:getDashboardStatsIn"/><wsdl:output message="tns:getDashboardStatsOut"/></wsdl:operation>
+    <wsdl:operation name="getAuditLog"><wsdl:input message="tns:getAuditLogIn"/><wsdl:output message="tns:getAuditLogOut"/></wsdl:operation>
+    <wsdl:operation name="getAllReviews"><wsdl:input message="tns:getAllReviewsIn"/><wsdl:output message="tns:getAllReviewsOut"/></wsdl:operation>
+    <wsdl:operation name="createPromoCode"><wsdl:input message="tns:createPromoCodeIn"/><wsdl:output message="tns:createPromoCodeOut"/></wsdl:operation>
+    <wsdl:operation name="listPromoCodes"><wsdl:input message="tns:listPromoCodesIn"/><wsdl:output message="tns:listPromoCodesOut"/></wsdl:operation>
+    <wsdl:operation name="setPromoCodeActive"><wsdl:input message="tns:setPromoCodeActiveIn"/><wsdl:output message="tns:setPromoCodeActiveOut"/></wsdl:operation>
+    <wsdl:operation name="deletePromoCode"><wsdl:input message="tns:deletePromoCodeIn"/><wsdl:output message="tns:deletePromoCodeOut"/></wsdl:operation>
+  </wsdl:portType>
+
+  <wsdl:binding name="UserServiceBinding" type="tns:UserServicePortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="registerUser">
+      <soap:operation soapAction="http://booking.example.com/soap/registerUser"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="loginUser">
+      <soap:operation soapAction="http://booking.example.com/soap/loginUser"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getUser">
+      <soap:operation soapAction="http://booking.example.com/soap/getUser"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updateUser">
+      <soap:operation soapAction="http://booking.example.com/soap/updateUser"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteUser">
+      <soap:operation soapAction="http://booking.example.com/soap/deleteUser"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="listUsers">
+      <soap:operation soapAction="http://booking.example.com/soap/listUsers"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+
+  <wsdl:binding name="AvailabilityServiceBinding" type="tns:AvailabilityServicePortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="getAllServices">
+      <soap:operation soapAction="http://booking.example.com/soap/getAllServices"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getServiceById">
+      <soap:operation soapAction="http://booking.example.com/soap/getServiceById"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="searchServices">
+      <soap:operation soapAction="http://booking.example.com/soap/searchServices"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="checkAvailability">
+      <soap:operation soapAction="http://booking.example.com/soap/checkAvailability"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAvailableSlots">
+      <soap:operation soapAction="http://booking.example.com/soap/getAvailableSlots"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createService">
+      <soap:operation soapAction="http://booking.example.com/soap/createService"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updateService">
+      <soap:operation soapAction="http://booking.example.com/soap/updateService"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteService">
+      <soap:operation soapAction="http://booking.example.com/soap/deleteService"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="setAvailability">
+      <soap:operation soapAction="http://booking.example.com/soap/setAvailability"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+
+  <wsdl:binding name="BookingServiceBinding" type="tns:BookingServicePortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="createReservation">
+      <soap:operation soapAction="http://booking.example.com/soap/createReservation"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getReservation">
+      <soap:operation soapAction="http://booking.example.com/soap/getReservation"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getUserReservations">
+      <soap:operation soapAction="http://booking.example.com/soap/getUserReservations"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="cancelReservation">
+      <soap:operation soapAction="http://booking.example.com/soap/cancelReservation"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updateReservation">
+      <soap:operation soapAction="http://booking.example.com/soap/updateReservation"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAllReservations">
+      <soap:operation soapAction="http://booking.example.com/soap/getAllReservations"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+
+  <wsdl:binding name="PaymentServiceBinding" type="tns:PaymentServicePortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="createPayment">
+      <soap:operation soapAction="http://booking.example.com/soap/createPayment"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getPayment">
+      <soap:operation soapAction="http://booking.example.com/soap/getPayment"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getPaymentByReservation">
+      <soap:operation soapAction="http://booking.example.com/soap/getPaymentByReservation"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="refundPayment">
+      <soap:operation soapAction="http://booking.example.com/soap/refundPayment"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAllPayments">
+      <soap:operation soapAction="http://booking.example.com/soap/getAllPayments"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getMyPayments">
+      <soap:operation soapAction="http://booking.example.com/soap/getMyPayments"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+
+  <wsdl:binding name="EngagementServiceBinding" type="tns:EngagementServicePortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="addFavorite">
+      <soap:operation soapAction="http://booking.example.com/soap/addFavorite"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="removeFavorite">
+      <soap:operation soapAction="http://booking.example.com/soap/removeFavorite"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getFavorites">
+      <soap:operation soapAction="http://booking.example.com/soap/getFavorites"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="saveReview">
+      <soap:operation soapAction="http://booking.example.com/soap/saveReview"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteReview">
+      <soap:operation soapAction="http://booking.example.com/soap/deleteReview"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getServiceReviews">
+      <soap:operation soapAction="http://booking.example.com/soap/getServiceReviews"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getMyNotifications">
+      <soap:operation soapAction="http://booking.example.com/soap/getMyNotifications"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="markNotificationRead">
+      <soap:operation soapAction="http://booking.example.com/soap/markNotificationRead"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="markAllNotificationsRead">
+      <soap:operation soapAction="http://booking.example.com/soap/markAllNotificationsRead"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="checkPromoCode">
+      <soap:operation soapAction="http://booking.example.com/soap/checkPromoCode"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+
+  <wsdl:binding name="AdminServiceBinding" type="tns:AdminServicePortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="getDashboardStats">
+      <soap:operation soapAction="http://booking.example.com/soap/getDashboardStats"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAuditLog">
+      <soap:operation soapAction="http://booking.example.com/soap/getAuditLog"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAllReviews">
+      <soap:operation soapAction="http://booking.example.com/soap/getAllReviews"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createPromoCode">
+      <soap:operation soapAction="http://booking.example.com/soap/createPromoCode"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="listPromoCodes">
+      <soap:operation soapAction="http://booking.example.com/soap/listPromoCodes"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="setPromoCodeActive">
+      <soap:operation soapAction="http://booking.example.com/soap/setPromoCodeActive"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deletePromoCode">
+      <soap:operation soapAction="http://booking.example.com/soap/deletePromoCode"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+        <soap:header message="tns:AuthHeader" part="AuthToken" use="literal"/>
+      </wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+
+  <wsdl:service name="UserService">
+    <wsdl:port name="UserPort" binding="tns:UserServiceBinding">
+      <soap:address location="http://localhost:4000/soap/user"/>
+    </wsdl:port>
+  </wsdl:service>
+
+  <wsdl:service name="AvailabilityService">
+    <wsdl:port name="AvailabilityPort" binding="tns:AvailabilityServiceBinding">
+      <soap:address location="http://localhost:4000/soap/availability"/>
+    </wsdl:port>
+  </wsdl:service>
+
+  <wsdl:service name="BookingService">
+    <wsdl:port name="BookingPort" binding="tns:BookingServiceBinding">
+      <soap:address location="http://localhost:4000/soap/booking"/>
+    </wsdl:port>
+  </wsdl:service>
+
+  <wsdl:service name="PaymentService">
+    <wsdl:port name="PaymentPort" binding="tns:PaymentServiceBinding">
+      <soap:address location="http://localhost:4000/soap/payment"/>
+    </wsdl:port>
+  </wsdl:service>
+
+  <wsdl:service name="EngagementService">
+    <wsdl:port name="EngagementPort" binding="tns:EngagementServiceBinding">
+      <soap:address location="http://localhost:4000/soap/engagement"/>
+    </wsdl:port>
+  </wsdl:service>
+
+  <wsdl:service name="AdminService">
+    <wsdl:port name="AdminPort" binding="tns:AdminServiceBinding">
+      <soap:address location="http://localhost:4000/soap/admin"/>
+    </wsdl:port>
+  </wsdl:service>
+
+</wsdl:definitions>

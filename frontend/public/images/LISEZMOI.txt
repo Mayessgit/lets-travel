@@ -1,0 +1,7 @@
+Placez ici vos images (JPG, environ 800x500 px).
+
+Images par défaut, utilisées quand un service n'a pas sa propre image :
+  hotel.jpg    flight.jpg    event.jpg
+
+Images propres à un service : donnez n'importe quel nom (ex: tunis-palace.jpg),
+puis saisissez /images/tunis-palace.jpg dans le champ Image du tableau de bord admin.

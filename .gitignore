@@ -1,0 +1,14 @@
+# Dépendances
+node_modules/
+
+# Configuration locale (ne jamais versionner de secret)
+.env
+.env.local
+.env.*.local
+
+# Build du frontend
+dist/
+
+# Divers
+*.log
+.DS_Store

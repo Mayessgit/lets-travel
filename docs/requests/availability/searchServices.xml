@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="http://booking.example.com/soap"><soapenv:Body><tns:searchServices><tns:keyword>Hôtel</tns:keyword><tns:type>HOTEL</tns:type><tns:maxPrice>200</tns:maxPrice><tns:sortBy>price_asc</tns:sortBy><tns:limit>12</tns:limit><tns:offset>0</tns:offset></tns:searchServices></soapenv:Body></soapenv:Envelope>

@@ -1,0 +1,22 @@
+{
+  "name": "booking-soap-backend",
+  "version": "1.0.0",
+  "description": "Service Web SOAP - plateforme de réservation (hôtels, vols, événements)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test --test-concurrency=1",
+    "generate-collection": "node scripts/generate-collection.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.5",
+    "express": "^4.22.3",
+    "jsonwebtoken": "^9.0.3",
+    "mysql2": "^3.24.5",
+    "soap": "^1.13.2"
+  }
+}

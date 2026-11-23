@@ -1,0 +1,1547 @@
+{
+  "info": {
+    "name": "Plateforme de réservation — SOAP",
+    "description": "Collection générée par backend/scripts/generate-collection.js. Importer dans Thunder Client (Collections → Import) ou Postman, appeler loginUser, puis copier le token renvoyé dans la variable {{token}}. Le corps est du XML brut : mode XML/Text, jamais JSON.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "UserService",
+      "item": [
+        {
+          "name": "registerUser",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Public (sans token)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Body><tns:registerUser><tns:name>Nouveau Client</tns:name><tns:email>nouveau.client@example.com</tns:email><tns:password>Secret123</tns:password><tns:phone>55123456</tns:phone></tns:registerUser></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "user"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "loginUser",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Public (sans token)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Body><tns:loginUser><tns:email>admin@booking.tn</tns:email><tns:password>Admin123!</tns:password></tns:loginUser></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "user"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getUser",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:getUser><tns:userId>2</tns:userId></tns:getUser></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "user"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "updateUser",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:updateUser><tns:userId>2</tns:userId><tns:name>Utilisateur Test</tns:name><tns:phone>20000000</tns:phone></tns:updateUser></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "user"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "deleteUser",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:deleteUser><tns:userId>999</tns:userId></tns:deleteUser></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "user"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "listUsers",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:listUsers></tns:listUsers></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "user"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "AvailabilityService",
+      "item": [
+        {
+          "name": "getAllServices",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Public (sans token)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Body><tns:getAllServices></tns:getAllServices></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/availability",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "availability"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getServiceById",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Public (sans token)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Body><tns:getServiceById><tns:serviceId>1</tns:serviceId></tns:getServiceById></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/availability",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "availability"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "searchServices",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Public (sans token)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Body><tns:searchServices><tns:keyword>Hôtel</tns:keyword><tns:type>HOTEL</tns:type><tns:maxPrice>200</tns:maxPrice><tns:sortBy>price_asc</tns:sortBy><tns:limit>12</tns:limit><tns:offset>0</tns:offset></tns:searchServices></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/availability",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "availability"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "checkAvailability",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Public (sans token)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Body><tns:checkAvailability><tns:serviceId>1</tns:serviceId><tns:date>2026-11-28</tns:date><tns:quantity>2</tns:quantity></tns:checkAvailability></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/availability",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "availability"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getAvailableSlots",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Public (sans token)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Body><tns:getAvailableSlots><tns:serviceId>1</tns:serviceId><tns:includeAll>true</tns:includeAll></tns:getAvailableSlots></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/availability",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "availability"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "createService",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:createService><tns:name>Test Excursion Tozeur</tns:name><tns:type>EVENT</tns:type><tns:location>Tozeur</tns:location><tns:price>75</tns:price><tns:description>Excursion de démonstration.</tns:description></tns:createService></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/availability",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "availability"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "updateService",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:updateService><tns:serviceId>1</tns:serviceId><tns:price>180</tns:price></tns:updateService></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/availability",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "availability"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "deleteService",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:deleteService><tns:serviceId>999</tns:serviceId></tns:deleteService></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/availability",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "availability"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "setAvailability",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:setAvailability><tns:serviceId>1</tns:serviceId><tns:date>2026-12-27</tns:date><tns:totalSlots>25</tns:totalSlots></tns:setAvailability></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/availability",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "availability"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "BookingService",
+      "item": [
+        {
+          "name": "createReservation",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:createReservation><tns:availabilityId>3</tns:availabilityId><tns:quantity>2</tns:quantity><tns:promoCode>WELCOME10</tns:promoCode></tns:createReservation></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/booking",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "booking"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getReservation",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:getReservation><tns:reservationId>1</tns:reservationId></tns:getReservation></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/booking",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "booking"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getUserReservations",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:getUserReservations></tns:getUserReservations></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/booking",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "booking"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "cancelReservation",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:cancelReservation><tns:reservationId>1</tns:reservationId></tns:cancelReservation></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/booking",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "booking"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "updateReservation",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:updateReservation><tns:reservationId>1</tns:reservationId><tns:quantity>2</tns:quantity></tns:updateReservation></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/booking",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "booking"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getAllReservations",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:getAllReservations><tns:status>CONFIRMED</tns:status></tns:getAllReservations></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/booking",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "booking"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "PaymentService",
+      "item": [
+        {
+          "name": "createPayment",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:createPayment><tns:reservationId>1</tns:reservationId><tns:method>CARD</tns:method></tns:createPayment></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/payment",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "payment"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getPayment",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:getPayment><tns:paymentId>1</tns:paymentId></tns:getPayment></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/payment",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "payment"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getPaymentByReservation",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:getPaymentByReservation><tns:reservationId>1</tns:reservationId></tns:getPaymentByReservation></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/payment",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "payment"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "refundPayment",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:refundPayment><tns:paymentId>1</tns:paymentId></tns:refundPayment></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/payment",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "payment"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getAllPayments",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:getAllPayments><tns:status>PAID</tns:status></tns:getAllPayments></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/payment",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "payment"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getMyPayments",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:getMyPayments></tns:getMyPayments></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/payment",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "payment"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "EngagementService",
+      "item": [
+        {
+          "name": "addFavorite",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:addFavorite><tns:serviceId>1</tns:serviceId></tns:addFavorite></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/engagement",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "engagement"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "removeFavorite",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:removeFavorite><tns:serviceId>1</tns:serviceId></tns:removeFavorite></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/engagement",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "engagement"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getFavorites",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:getFavorites></tns:getFavorites></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/engagement",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "engagement"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "saveReview",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:saveReview><tns:serviceId>1</tns:serviceId><tns:rating>5</tns:rating><tns:comment>Très bon séjour.</tns:comment></tns:saveReview></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/engagement",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "engagement"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "deleteReview",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:deleteReview><tns:reviewId>1</tns:reviewId></tns:deleteReview></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/engagement",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "engagement"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getServiceReviews",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Public (sans token)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Body><tns:getServiceReviews><tns:serviceId>1</tns:serviceId><tns:limit>10</tns:limit><tns:offset>0</tns:offset></tns:getServiceReviews></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/engagement",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "engagement"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getMyNotifications",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:getMyNotifications><tns:limit>10</tns:limit></tns:getMyNotifications></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/engagement",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "engagement"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "markNotificationRead",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:markNotificationRead><tns:notificationId>1</tns:notificationId></tns:markNotificationRead></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/engagement",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "engagement"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "markAllNotificationsRead",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:markAllNotificationsRead></tns:markAllNotificationsRead></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/engagement",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "engagement"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "checkPromoCode",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:checkPromoCode><tns:code>WELCOME10</tns:code></tns:checkPromoCode></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/engagement",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "engagement"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "AdminService",
+      "item": [
+        {
+          "name": "getDashboardStats",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:getDashboardStats><tns:days>30</tns:days></tns:getDashboardStats></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/admin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "admin"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getAuditLog",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:getAuditLog><tns:limit>50</tns:limit><tns:offset>0</tns:offset></tns:getAuditLog></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/admin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "admin"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getAllReviews",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:getAllReviews><tns:limit>50</tns:limit><tns:offset>0</tns:offset></tns:getAllReviews></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/admin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "admin"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "createPromoCode",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:createPromoCode><tns:code>TESTPROMO</tns:code><tns:percent>15</tns:percent><tns:validFrom>2026-11-17</tns:validFrom><tns:validTo>2026-12-17</tns:validTo><tns:maxUses>50</tns:maxUses></tns:createPromoCode></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/admin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "admin"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "listPromoCodes",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:listPromoCodes></tns:listPromoCodes></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/admin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "admin"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "setPromoCodeActive",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:setPromoCodeActive><tns:promoCodeId>1</tns:promoCodeId><tns:active>true</tns:active></tns:setPromoCodeActive></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/admin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "admin"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "deletePromoCode",
+          "request": {
+            "method": "POST",
+            "description": "Accès : Authentifié (en-tête AuthToken requis ; ADMIN pour les opérations d’administration)",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:tns=\"http://booking.example.com/soap\"><soapenv:Header><tns:AuthToken>{{token}}</tns:AuthToken></soapenv:Header><soapenv:Body><tns:deletePromoCode><tns:promoCodeId>999</tns:promoCodeId></tns:deletePromoCode></soapenv:Body></soapenv:Envelope>\n",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/soap/admin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "soap",
+                "admin"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
